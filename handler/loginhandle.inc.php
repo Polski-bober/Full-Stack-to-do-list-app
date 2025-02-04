@@ -24,17 +24,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $stmt->execute();
 
-            // close connection to database
+            // when submitted form forward user to to_do_app.php
+            header("Location: ../to_do_app.php");
+        } else if ($selectType == "logIn") {
+            // prepare sql and bind parameters
+            $query = "SELECT * FROM `users` WHERE username = :username AND password = :password";
+            $stmt = $conn->prepare($query);
+
+            $stmt->bindParam(':username', $username);
+            $stmt->bindParam(':password', $password);
+
+            $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                // when submitted form forward user to to_do_app.php
+                header("Location: ../to_do_app.php");
+            } else {
+                echo "<h2 style=text-align:center;>User with this username and password does not exist. Please try again. <h2>";
+
+                // close connection to database and die
+                $pdo = null;
+                $stmt = null;
+                die();
+            }
+        } else {
+            // close connection to database and die
             $pdo = null;
             $stmt = null;
-
-            // when submitted form forward user to to_do_app.php kill script
-            header("Location: ../to_do_app.php");
-            die();
-        } else if ($selectType == "logIn") {
-
-            header("Location: ../to_do_app.php");
-        } else {
             die();
         }
     } catch (PDOException $e) {
