@@ -1,3 +1,34 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    * {
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background-color: #222233;
+    }
+
+    h2 {
+        color: white;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    input {
+        padding: 0.75rem 1.5rem;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        margin-left: 0.5rem;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+</style>
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -40,7 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // when submitted form forward user to to_do_app.php
                 header("Location: ../to_do_app.php");
             } else {
+                echo "<div style=display:flex;justify-content:center;align-items:center;flex-direction:column;height:100vh;margin:0;padding:0;box-sizing:border-box;>";
                 echo "<h2 style=text-align:center;>User with this username and password does not exist. Please try again. <h2>";
+                echo '
+                    <a href="../index.php" style="padding-left:auto; padding-right:auto;">  
+                        <input type="submit" value="Return to login page"/>
+                    </a>
+                </div>';
 
                 // close connection to database and die
                 $pdo = null;
@@ -53,12 +90,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = null;
             die();
         }
+
+        // start the session
+        session_start();
+
+        // stores posted values in the session variables
+        $_SESSION['username'] = $username;
+        $_SESSION['password'] = $password;
     } catch (PDOException $e) {
         if ($e->errorInfo[1] == 1062) {
-            echo "<h2 style=text-align:center;>User with this username already exists. Please choose another one. <h2>";
+            echo "
+            <div style=display:flex;justify-content:center;align-items:center;flex-direction:column;height:100vh;margin:0;padding:0;box-sizing:border-box;>
+            <h2>User with this username already exists. Please choose another one. <h2>";
+            echo '
+                    <a href="../index.php">  
+                        <input type="submit" value="Return to login page"/>
+                    </a>
+                </div>';
         } else {
-            echo "<h2 style=text-align:center;>Error: " . $e->getMessage() . "<br /> </h2>";
-            echo "<h2 style=text-align:center;>Contact website administrator </h2>";
+            echo "<div style=display:flex;justify-content:center;align-items:center;flex-direction:column;height:100vh;margin:0;padding:0;box-sizing:border-box;>";
+            echo "<h2>Error: " . $e->getMessage() . "</h2> <br />" . "<h2>Contact website administrator </h2>" . "</div>";
         }
         die();
     }
