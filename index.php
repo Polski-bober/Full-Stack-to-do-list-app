@@ -24,6 +24,8 @@
         </select> <br />
 
         <button type="submit">Login/Create Account</button>
+
+        <p style="padding-top: 10px;">Default: admin admin</p>
     </form>
 </body>
 

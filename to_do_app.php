@@ -37,12 +37,24 @@ try {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['contents'])) {
         // Add new task
-        $stmt = $conn->prepare("INSERT INTO lists (username, contents) VALUES (?, ?)");
-        $stmt->execute([$_SESSION['username'], $_POST['contents']]);
+        $stmt = $conn->prepare("INSERT INTO lists (username, contents, isDone) VALUES (?, ?, ?)");
+        $stmt->execute([$_SESSION['username'], $_POST['contents'], 0]);
     } elseif (!empty($_POST['delete_id'])) {
         // Delete task
         $stmt = $conn->prepare("DELETE FROM lists WHERE listID = ? AND username = ?");
         $stmt->execute([$_POST['delete_id'], $_SESSION['username']]);
+    } elseif (!empty($_POST['mark_id'])) {
+        // Toggle task isDone status
+        // Fetch the current status of the task
+        $stmt = $conn->prepare("SELECT isDone FROM lists WHERE listID = ? AND username = ?");
+        $stmt->execute([$_POST['mark_id'], $_SESSION['username']]);
+        $task = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($task) {
+            $newStatus = $task['isDone'] ? 0 : 1; // Toggle the status
+            $stmt = $conn->prepare("UPDATE lists SET isDone = ? WHERE listID = ? AND username = ?");
+            $stmt->execute([$newStatus, $_POST['mark_id'], $_SESSION['username']]);
+        }
     }
 }
 
@@ -73,10 +85,20 @@ $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <ul class="task-list">
             <?php foreach ($tasks as $task): ?>
                 <li class="task-item">
-                    <span><?= htmlspecialchars($task['contents']) ?></span>
+                    <?php
+                    if ($task['isDone'] == 1) {
+                        echo "<s><span >" . htmlspecialchars($task['contents']) . "</span> </s>";
+                    } elseif ($task['isDone'] == 0) {
+                        echo "<span>" . htmlspecialchars($task['contents']) . "</span>";
+                    }
+                    ?>
                     <form method="POST">
                         <input type="hidden" name="delete_id" value="<?= $task['listID'] ?>">
                         <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="mark_id" value="<?= $task['listID'] ?>">
+                        <button type="submit" class="btn btn-success"><?php echo $task['isDone'] ?  "❌" :  "✔️" ?></button>
                     </form>
                 </li>
             <?php endforeach; ?>
