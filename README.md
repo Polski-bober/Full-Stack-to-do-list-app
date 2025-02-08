@@ -6,6 +6,7 @@ A simple yet powerful full-stack To-Do List application built with **HTML5**, **
 
 - **Add Tasks**: Quickly add new tasks with a user-friendly form.
 - **Delete Tasks**: Remove tasks permanently with one click.
+- **Mark as Complete**: Check off tasks once they're done.
 - **Real-Time Updates**: PHP-driven server-side rendering for instant changes.
 - **Responsive Design**: Works smoothly on both desktop and mobile devices.
 
@@ -18,9 +19,3 @@ A simple yet powerful full-stack To-Do List application built with **HTML5**, **
 ## Installation
 
 - Import database from ./MySQL database for import/to_do_list_app.sql
-
-## To do:
-
-- **Editing tasks**
-- **Mark as Complete**
-- **Add demo screenshot**
